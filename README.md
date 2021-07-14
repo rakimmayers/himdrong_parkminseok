@@ -17,7 +17,6 @@
    <li style="font-size:25px;">알고리즘</li>
    <li style="font-size:25px;">코드 설명</li>
    <li style="font-size:25px;">팀원</li>
-   <li style="font-size:25px;">참고 문헌</li>
 </ol>
 
 #
@@ -302,7 +301,7 @@ def moveSoso(drone, BlueSum):
     sleep(3)
 
 ```
-링과의 거리에 따라 이동 속도 거리 등등 조절
+링과의 거리에 따라 이동 속도와 거리 조절
 </br></br>
 
 2-c) 링 근접

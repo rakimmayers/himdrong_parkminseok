@@ -222,6 +222,10 @@ d) 판단한 색에 따라 드론 동작</br></br></br>
 각 지점에서 드론 Raspberry Pi에 연결된 카메라로 찍은 원본 이미지</br></br>
 
 1-b)Threshold 값 설정
+
+<img src="https://user-images.githubusercontent.com/82248453/125587887-ffa033d9-4012-444c-85ec-87c314f692a5.jpg" width="800" height="400">
+
+Toolbar code를 이용하여 적정 Threshold 값 탐색
 ```python
 lower_blue = (95, 0, 50)  
 upper_blue = (110, 255, 250)
@@ -233,7 +237,9 @@ upper_purple = (180, 255, 50)
 lower_red = (0, 0, 5)  
 upper_red = (17, 255, 240)
 ```
+변수 안에 값 설정
 </br></br>
+
 1-c) HSV 변환
 ```python 
 img = frame.array
@@ -315,7 +321,7 @@ def moveSmall(drone, BlueSum, dist_x, dist_y):
         sleep(3)
     
     elif (dist_x == 0 and dist_y != 0):
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 5, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 5, 0, 0)
         sleep(3)
         drone.sendControlPosition16(6, 0, 0, 7, 0, 0)
         sleep(3)
@@ -323,7 +329,7 @@ def moveSmall(drone, BlueSum, dist_x, dist_y):
     elif (dist_x != 0 and dist_y != 0):
         drone.sendControlPosition16(0, dist_x//abs(dist_x), 0, 5, 0, 0)
         sleep(3)
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 5, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 5, 0, 0)
         sleep(3)
         drone.sendControlPosition16(6, 0, 0, 7, 0, 0)
         sleep(3)
@@ -343,7 +349,7 @@ def move2Small(drone, BlueSum, dist_x, dist_y):
         sleep(3)
     
     elif (dist_x == 0 and dist_y != 0):
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 7, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 7, 0, 0)
         sleep(3)
         drone.sendControlPosition16(4, 0, 0, 7, 0, 0)
         sleep(3)
@@ -351,11 +357,10 @@ def move2Small(drone, BlueSum, dist_x, dist_y):
     elif (dist_x != 0 and dist_y != 0):
         drone.sendControlPosition16(0, dist_x//abs(dist_x), 0, 7, 0, 0)
         sleep(3)
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 7, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 7, 0, 0)
         sleep(3)
         drone.sendControlPosition16(4, 0, 0, 7, 0, 0)
         sleep(3)
-
 ```
 근접 거리에 따라 드론 위치 조정
 </br></br>
@@ -397,21 +402,34 @@ if (BlueSum < Dmode[0][0]):
     PurpleSum = np.sum(tmpP == 255, axis = None)
 
 
-    #if (RedSum > PurpleSum):
     if (RedSum != 0):
-        #일단 노이즈 없이 검출 되는 경우
-        print(f"detect red / BlueSum : {BlueSum}")
-        drone.sendControlPosition16(3, 0, 0, 5, 0, 0)
-        sleep(4)
-        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-        sleep(6)
-        level_cnt += 1
-        print("red, rotate complete, now level_cnt:", level_cnt)
-        Dmode = mode[level_cnt]
-        no_trap = True
-        drone.sendControlPosition16(10,0,0,8,0,0)
-        sleep(5)
-        continue
+        if(RedSum < 200):
+            print(f"detect red / BlueSum : {BlueSum}")
+            drone.sendControlPosition16(4, 0, 0, 4, 0, 0)
+            sleep(4)
+            drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+            sleep(6)
+            level_cnt += 1
+            print("red, rotate complete, now level_cnt:", level_cnt)
+            Dmode = mode[level_cnt]
+            no_trap = True
+            drone.sendControlPosition16(10,0,0,7,0,0)
+            sleep(5)
+            continue
+        else:
+            print(f"detect red / BlueSum : {BlueSum}")
+            drone.sendControlPosition16(3, 0, 0, 3, 0, 0)
+            sleep(4)
+            drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+            sleep(6)
+            level_cnt += 1
+            print("red, rotate complete, now level_cnt:", level_cnt)
+            Dmode = mode[level_cnt]
+            no_trap = True
+            drone.sendControlPosition16(10,0,0,7,0,0)
+            sleep(5)
+            continue
+
         
     elif (RedSum == 0 and PurpleSum != 0):
         print("purple")
@@ -420,9 +438,8 @@ if (BlueSum < Dmode[0][0]):
         break
 
     else:
-        #둘다 노이즈로 판명난 경우엔 다시 검출을 합니다
-        continue  
-
+        #둘다 노이즈로 판명난 경우엔 다시 검출
+        continue
 ```
 링 내부일 경우 색 검출 후 앞으로 이동 후 검출된 색에 따라 드론 동작 (Rotate 90 / Landing)
 </br></br>
@@ -492,28 +509,23 @@ import numpy as np
 import cv2
 
 #정의 부분
-'''lower_purple = (133, 0, 5)
-upper_purple = (143, 255, 50)'''
-
-lower_purple = (110, 0, 5)
-upper_purple = (180, 255, 50)
-
 lower_blue = (95, 0, 50)  
 upper_blue = (110, 255, 250)
 
 lower_red = (0, 0, 5)  
 upper_red = (17, 255, 240)
 
+lower_purple = (110, 0, 5)
+upper_purple = (180, 255, 50)
+
 level_cnt = 1
 no_trap = True
-
 
 mode = {1:[range(100, 30000), range(30000, 100000), range(100000, 150000), 150000], 
         2:[range(100, 50000), range(50000, 120000), range(120000, 170000), 170000], 
         3:[range(100, 50000), range(50000, 140000), range(140000, 200000), 200000]}  # [min,max]
 
 lastBluesum = 0
-
 
 def moveLarge(drone, BlueSum):
     #이동 11
@@ -543,7 +555,7 @@ def moveSmall(drone, BlueSum, dist_x, dist_y):
         sleep(3)
     
     elif (dist_x == 0 and dist_y != 0):
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 5, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 5, 0, 0)
         sleep(3)
         drone.sendControlPosition16(6, 0, 0, 7, 0, 0)
         sleep(3)
@@ -551,7 +563,7 @@ def moveSmall(drone, BlueSum, dist_x, dist_y):
     elif (dist_x != 0 and dist_y != 0):
         drone.sendControlPosition16(0, dist_x//abs(dist_x), 0, 5, 0, 0)
         sleep(3)
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 5, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 5, 0, 0)
         sleep(3)
         drone.sendControlPosition16(6, 0, 0, 7, 0, 0)
         sleep(3)
@@ -571,7 +583,7 @@ def move2Small(drone, BlueSum, dist_x, dist_y):
         sleep(3)
     
     elif (dist_x == 0 and dist_y != 0):
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 7, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 7, 0, 0)
         sleep(3)
         drone.sendControlPosition16(4, 0, 0, 7, 0, 0)
         sleep(3)
@@ -579,7 +591,7 @@ def move2Small(drone, BlueSum, dist_x, dist_y):
     elif (dist_x != 0 and dist_y != 0):
         drone.sendControlPosition16(0, dist_x//abs(dist_x), 0, 7, 0, 0)
         sleep(3)
-        drone.sendControlPosition16(0, 0, dist_y//abs(dist_y), 7, 0, 0)
+        drone.sendControlPosition16(0, 0, 2*(dist_y//abs(dist_y)), 7, 0, 0)
         sleep(3)
         drone.sendControlPosition16(4, 0, 0, 7, 0, 0)
         sleep(3)
@@ -607,7 +619,7 @@ drone.open()
 try:
     drone.sendTakeOff()
     sleep(5)
-    drone.sendControlPosition16(13,0,0,8,0,0)
+    drone.sendControlPosition16(11,0,0,7,0,0)
     sleep(5) 
 
     camera = PiCamera() 
@@ -626,36 +638,49 @@ try:
 
         rawCapture.truncate(0)
 
-        tmpB = cv2.medianBlur(imgH_B, 21)
+        tmpB = cv2.medianBlur(imgH_B, 21) # 파란색 링에 medianBlur 적용한 이미지
         
-        BlueSum = np.sum(tmpB == 255, axis = None)
+        BlueSum = np.sum(tmpB == 255, axis = None) # Blue 픽셀 합
         print(f"first BlueSum : {BlueSum}")
         
         if (BlueSum < Dmode[0][0]):
             #링 내부
             print(f"inside ring / BlueSum : {BlueSum}")
-            
             imgH_R = cv2.inRange(imghsv, lower_red, upper_red)
             imgH_P = cv2.inRange(imghsv, lower_purple, upper_purple)
             tmpR = cv2.medianBlur(imgH_R, 7)
             tmpP = cv2.medianBlur(imgH_P, 7)
             RedSum = np.sum(tmpR == 255, axis = None)
             PurpleSum = np.sum(tmpP == 255, axis = None)
-        
-        
+            
             if (RedSum != 0):
-                print(f"detect red / BlueSum : {BlueSum}")
-                drone.sendControlPosition16(3, 0, 0, 5, 0, 0)
-                sleep(4)
-                drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                sleep(6)
-                level_cnt += 1
-                print("red, rotate complete, now level_cnt:", level_cnt)
-                Dmode = mode[level_cnt]
-                no_trap = True
-                drone.sendControlPosition16(10,0,0,8,0,0)
-                sleep(5)
-                continue
+                if(RedSum < 200):
+                    print(f"detect red / BlueSum : {BlueSum}")
+                    drone.sendControlPosition16(4, 0, 0, 4, 0, 0)
+                    sleep(4)
+                    drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                    sleep(6)
+                    level_cnt += 1
+                    print("red, rotate complete, now level_cnt:", level_cnt)
+                    Dmode = mode[level_cnt]
+                    no_trap = True
+                    drone.sendControlPosition16(10,0,0,7,0,0)
+                    sleep(5)
+                    continue
+                else:
+                    print(f"detect red / BlueSum : {BlueSum}")
+                    drone.sendControlPosition16(3, 0, 0, 3, 0, 0)
+                    sleep(4)
+                    drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                    sleep(6)
+                    level_cnt += 1
+                    print("red, rotate complete, now level_cnt:", level_cnt)
+                    Dmode = mode[level_cnt]
+                    no_trap = True
+                    drone.sendControlPosition16(10,0,0,7,0,0)
+                    sleep(5)
+                    continue
+
                 
             elif (RedSum == 0 and PurpleSum != 0):
                 print("purple")
@@ -673,7 +698,8 @@ try:
 
             (dist_x, dist_y) = detectDist(tmpB)
             
-            if (BlueSum in Dmode[0]):               #링 경계   
+            if (BlueSum in Dmode[0]):
+            #링 경계   
                 if (BlueSum - lastBluesum >= 0 and no_trap):
                     #현재 - 과거 픽셀이며, 양수면 매우 멀리있는 경우이므로 moveLarge 모드로 더 다가가야 함
                     moveLarge(drone, BlueSum)

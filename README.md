@@ -151,14 +151,12 @@ def sendControlPosition(self, positionX, positionY, positionZ, velocity, heading
 <img src="https://user-images.githubusercontent.com/82248453/125471207-707e75a5-1718-474f-b1ae-1175ddf4ef5b.png" width="400" height="500">
 </br>
 </br>
-</br>
 
 * <b style="font-size:18px; font-weight:450;">사용 재료</b>
 
 [크로마키 천](http://prod.danawa.com/info/?pcode=6236910&keyword=촬영+배경천+크로마키천&cate=12237571) x 3</br>
 [크로마키 거치대](https://smartstore.naver.com/tentosix/products/5235400713?) x 6</br>
 [거치대 크로스바](http://shopping.interpark.com/product/productInfo.do?prdNo=7793992496&dispNo=016001&bizCd=P01397&NaPm=ct%3Dkmw2mo80%7Cci%3Dacf29c276c2b6716805b8868a1494b6bf00965fa%7Ctr%3Dslsl%7Csn%3D3%7Chk%3D3d37d1ee7ba040be32a802a26768c0d771db0c84&utm_medium=affiliate&utm_source=naver&utm_campaign=shop_p11714_p01397&utm_content=price_comparison) x 3
-</br>
 </br>
 </br>
 

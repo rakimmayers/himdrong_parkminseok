@@ -18,6 +18,7 @@
    <li style="font-size:25px;">코드 설명</li>
    <li style="font-size:25px;">팀원</li>
 </ol>
+[README.md](https://github.com/rakimmayers/himdrong_parkminseok/files/6814692/README.md)
 
 #
 <br/>

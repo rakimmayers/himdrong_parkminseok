@@ -755,6 +755,6 @@ except Exception as e:
 
 </br></br>
 # IV. Team Members
-* **Leader** : [Minseok Park](https://github.com/rakimmayers/himdrong_parkminseok)
+* **Leader** : [Minseok Park](https://github.com/rakimmayers)
 
-* **Members** : [Wonwoo Lee](https://github.com/wwonoo/himdrong_leewonwoo), [Seoyeon Jang](https://github.com/OREOCHIZ/miniDrone2021HW.git) 
+* **Members** : [Wonwoo Lee](https://github.com/wwonoo), [Seoyeon Jang](https://github.com/OREOCHIZ) 

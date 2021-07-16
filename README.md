@@ -42,7 +42,7 @@
 - __Model__ : [Raspberry Pi Zero W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/) 
 - __Processor__ : BCM2835 @ 1GHz
 - __Memory__ : 512MB RAM
-- __Operating Power__ : 0.5-0.7V
+- __Operating Voltage__ : 0.5-0.7V
 </br></br></br>
 
 <img src="https://user-images.githubusercontent.com/82248453/125569015-ea6c82c7-decb-4308-a0f6-337140f61346.jpg" width="400" height="300"> 
@@ -280,14 +280,12 @@ mode = {1:[range(100, 30000), range(30000, 100000), range(100000, 150000), 15000
 
 ```python
 def moveLarge(drone, BlueSum):
-    #이동 11
     print(f"move Large / BlueSum : {BlueSum}")            
     drone.sendControlPosition16(11, 0, 0, 6, 0, 0)
     sleep(4)
         
 
 def moveSoso(drone, BlueSum):
-    #이동 8
     print(f"move soso / BlueSum : {BlueSum}")
     drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
     sleep(4)
@@ -300,7 +298,6 @@ def moveSoso(drone, BlueSum):
 * Position and move according to the close distance to the ring.
 ```python
 def moveSmall(drone, BlueSum, dist_x, dist_y):
-    #이동 6
     print(f"move small / BlueSum : {BlueSum}")
     if (dist_x == 0 and dist_y == 0):
         drone.sendControlPosition16(6, 0, 0, 4, 0, 0)
@@ -384,12 +381,11 @@ def detectDist(tmpB):
 * Move forward and operate(rotate 90/landing) after color detection(red/purple) inside the ring.
 ```python
 if (BlueSum < Dmode[0][0]):
-    #링 내부로 들어왔다는 뜻
     print(f"inside ring / BlueSum : {BlueSum}")
     
     imgH_R = cv2.inRange(imghsv, lower_red, upper_red)
     imgH_P = cv2.inRange(imghsv, lower_purple, upper_purple)
-    tmpR = cv2.medianBlur(imgH_R, 7) # 좌회전을 판단할 점 요소
+    tmpR = cv2.medianBlur(imgH_R, 7)
     tmpP = cv2.medianBlur(imgH_P, 7)
     RedSum = np.sum(tmpR == 255, axis = None)
     PurpleSum = np.sum(tmpP == 255, axis = None)
@@ -433,7 +429,6 @@ if (BlueSum < Dmode[0][0]):
 
 
     else:
-        #둘다 노이즈로 판명난 경우엔 다시 검출을 합니다
         continue
 ```
 
@@ -445,19 +440,15 @@ if (BlueSum < Dmode[0][0]):
 ```python
 if (BlueSum < Dmode[0][0]):...
 else:
-    # 링 외부에 있다는 뜻
     print(f"out of ring / BlueSum : {BlueSum}")
 
     (dist_x, dist_y) = detectDist(tmpB)
     
-    if (BlueSum in Dmode[0]):               
-	#링 경계   
+    if (BlueSum in Dmode[0]):                
         if (BlueSum - lastBluesum >= 0 and no_trap):
-            #현재 - 과거 픽셀이며, 양수면 매우 멀리있는 경우이므로 moveLarge 모드로 더 다가가야 함
             moveLarge(drone, BlueSum)
 
         else:
-            #음수면 링과 매우 근접한 경우이므로, 조금만 움직여야 함.
             move2Small(drone, BlueSum, dist_x, dist_y)
         lastBluesum = BlueSum
         continue
@@ -522,26 +513,23 @@ no_trap = True
 
 mode = {1:[range(100, 30000), range(30000, 100000), range(100000, 150000), 150000], 
         2:[range(100, 50000), range(50000, 120000), range(120000, 170000), 170000], 
-        3:[range(100, 70000), range(70000, 140000), range(140000, 200000), 200000]}  # [min,max]
+        3:[range(100, 70000), range(70000, 140000), range(140000, 200000), 200000]}
 
 lastBluesum = 0
 
 def moveLarge(drone, BlueSum):
-    #이동 11
     print(f"move Large / BlueSum : {BlueSum}")            
     drone.sendControlPosition16(11, 0, 0, 6, 0, 0)
     sleep(4)
         
 
 def moveSoso(drone, BlueSum):
-    #이동 8
     print(f"move soso / BlueSum : {BlueSum}")
     drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
     sleep(4)
    
                     
 def moveSmall(drone, BlueSum, dist_x, dist_y):
-    #이동 6
     print(f"move small / BlueSum : {BlueSum}")
     if (dist_x == 0 and dist_y == 0):
         drone.sendControlPosition16(6, 0, 0, 4, 0, 0)
@@ -637,25 +625,23 @@ try:
 
         rawCapture.truncate(0)
 
-        tmpB = cv2.medianBlur(imgH_B, 21) # 파란색 링에 medianBlur 적용한 이미지
+        tmpB = cv2.medianBlur(imgH_B, 21)
         
-        BlueSum = np.sum(tmpB == 255, axis = None) # 파란색링의 이미지
+        BlueSum = np.sum(tmpB == 255, axis = None)
         print(f"first BlueSum : {BlueSum}")
         
         if (BlueSum < Dmode[0][0]):
-            #링 내부로 들어왔다는 뜻
             print(f"inside ring / BlueSum : {BlueSum}")
             
             imgH_R = cv2.inRange(imghsv, lower_red, upper_red)
             imgH_P = cv2.inRange(imghsv, lower_purple, upper_purple)
-            tmpR = cv2.medianBlur(imgH_R, 7) # 좌회전을 판단할 점 요소
+            tmpR = cv2.medianBlur(imgH_R, 7)
             tmpP = cv2.medianBlur(imgH_P, 7)
             RedSum = np.sum(tmpR == 255, axis = None)
             PurpleSum = np.sum(tmpP == 255, axis = None)
 
 
             if (RedSum != 0 and level_cnt != 3):
-                #일단 노이즈 없이 검출 되는 경우
                 if (RedSum < 200):
                     print(f"detect red / BlueSum : {BlueSum}")
                     drone.sendControlPosition16(4, 0, 0, 4, 0, 0)
@@ -694,23 +680,18 @@ try:
 
 
             else:
-                #둘다 노이즈로 판명난 경우엔 다시 검출을 합니다
                 continue  
 
         else:
-            # 링 외부에 있다는 뜻
             print(f"out of ring / BlueSum : {BlueSum}")
 
             (dist_x, dist_y) = detectDist(tmpB)
             
             if (BlueSum in Dmode[0]):               
-                #링 경계   
                 if (BlueSum - lastBluesum >= 0 and no_trap):
-                    #현재 - 과거 픽셀이며, 양수면 매우 멀리있는 경우이므로 moveLarge 모드로 더 다가가야 함
                     moveLarge(drone, BlueSum)
 
                 else:
-                    #음수면 링과 매우 근접한 경우이므로, 조금만 움직여야 함.
                     move2Small(drone, BlueSum, dist_x, dist_y)
                 lastBluesum = BlueSum
                 continue
